@@ -1,5 +1,5 @@
-game_id,display_name,score_multiplier
-BRICK_BREAKER,Brick Breaker,3
-MINI_METRO,Mini Metro,1
-HIBACHI_HERO,Hibachi Hero,4
-TIKI_TAKA_SOCCER,Tiki Taka Soccer,3
+game_id,display_name,score_multiplier,algo
+BRICK_BREAKER,Brick Breaker,3,2
+MINI_METRO,Mini Metro,1,1
+HIBACHI_HERO,Hibachi Hero,4,1
+TIKI_TAKA_SOCCER,Tiki Taka Soccer,3,2

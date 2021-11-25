@@ -14,18 +14,26 @@ type GameProperties struct {
 	GameId          string `json:"game_id" csv:"game_id"`
 	DisplayName     string `json:"display_name" csv:"display_name"`
 	ScoreMultiplier int    `json:"score_multiplier" csv:"score_multiplier"`
+	Algo            int    `json:"algo" csv:"algo"`
 }
 
 // GameSession is one played game session
 type GameSession struct {
-	GameDate           string `json:"game_date"`
-	GameId             string `json:"game_id"`
-	ThresholdHeartRate int    `json:"threshold_hr"`
-	HeartRates         []int  `json:"heartRates"`
+	GameDate   string      `json:"game_date"`
+	GameId     string      `json:"game_id"`
+	HeartRates []HeartRate `json:"heartRateObjects"`
+	//ThresholdHeartRate int    `json:"threshold_hr"`
+	//HeartRates         []int  `json:"heartRates"`
+}
+
+type HeartRate struct {
+	Threshold int `json:"threshold"`
+	Hr        int `json:"hr"`
 }
 
 // heartRateState represents the one of the two states that a user can be in
 type heartRateState int
+
 const (
 	blue heartRateState = iota
 	red
@@ -39,7 +47,8 @@ func (g GameSession) algo1(gp GameProperties) int {
 	var state heartRateState
 
 	// init start state
-	if g.HeartRates[0] > g.ThresholdHeartRate {
+	//if g.HeartRates[0] > g.ThresholdHeartRate {
+	if g.HeartRates[0].Hr > g.HeartRates[0].Threshold {
 		state = red
 	} else {
 		state = blue
@@ -50,7 +59,7 @@ func (g GameSession) algo1(gp GameProperties) int {
 		// Set current heart rate state
 		// go provides no ternary op, so we have if/else
 		var currentHrState heartRateState
-		if hr > g.ThresholdHeartRate {
+		if hr.Hr > hr.Threshold {
 			currentHrState = red
 		} else {
 			currentHrState = blue
@@ -81,7 +90,7 @@ func (g GameSession) algo2(gp GameProperties) int {
 	var state heartRateState
 
 	// init start state
-	if g.HeartRates[0] > g.ThresholdHeartRate {
+	if g.HeartRates[0].Hr > g.HeartRates[0].Threshold {
 		state = red
 	} else {
 		state = blue
@@ -90,7 +99,7 @@ func (g GameSession) algo2(gp GameProperties) int {
 	// loop through heart rates, process, and create score
 	for _, hr := range g.HeartRates[1:] {
 		var currentHrState heartRateState
-		if hr > g.ThresholdHeartRate {
+		if hr.Hr > hr.Threshold {
 			currentHrState = red
 		} else {
 			currentHrState = blue
@@ -152,13 +161,21 @@ func main() {
 	}
 
 	// Process Game
-	score1 := session.algo1(p)
-	score2 := session.algo2(p)
+	score := 0
+	switch p.Algo {
+	case 1:
+		score = session.algo1(p)
+	case 2:
+		score = session.algo2(p)
+	}
+	//score1 := session.algo1(p)
+	//score2 := session.algo2(p)
 
 	// Publish Results
 	fmt.Println("Processed Data:")
 	fmt.Println(session.GameDate)
 	fmt.Println(p.DisplayName)
-	fmt.Printf("Score1: %d\n", score1)
-	fmt.Printf("Score2: %d\n", score2)
+	fmt.Printf("Score: %d\n", score)
+	//fmt.Printf("Score1: %d\n", score1)
+	//fmt.Printf("Score2: %d\n", score2)
 }

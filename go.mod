@@ -1,4 +1,4 @@
-module github.com/sdwalsh/mightier-interview
+module mightier-interview
 
 go 1.17
 
